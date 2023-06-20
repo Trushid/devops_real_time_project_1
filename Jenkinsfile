@@ -44,7 +44,14 @@ stage('MODIFIED IMAGE TAG') {
                     -Dsonar.host.url=http://172.31.10.150:9000 \
                     -Dsonar.token=$sonar_token'
             }
-        }         
+        } 
+
+        stage('COPY JAR & DOCKERFILE') {
+            steps {
+                sh 'ansible-playbook playbooks/create_directory.yml'
+            }
+        }
+                
              
       } 
   }          
