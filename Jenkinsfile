@@ -14,10 +14,10 @@ pipeline {
 
         stage('CODE CHECKOUT') {
             steps {
-                git 'https://github.com/Trushid/devops_real_time_project_1.git'
+                git 'https://github.com/sunnydevops2022/devops_real_time_project_1.git'
             }
-        } 
-
+        }
+        
         stage('MODIFIED IMAGE TAG') {
             steps {
                 sh '''
@@ -26,14 +26,14 @@ pipeline {
                    sed -i "s/IMAGE_NAME/$JOB_NAME:v1.$BUILD_ID/g" webapp/src/main/webapp/index.jsp
                    '''
             }            
-        }   
-
+        }
+        
         stage('BUILD') {
             steps {
                 sh 'mvn clean install package'
             }
-        }   
-
+        } 
+        
         stage('SONAR SCANNER') {
             environment {
             sonar_token = credentials('SONAR_TOKEN')
@@ -41,17 +41,17 @@ pipeline {
             steps {
                 sh 'mvn sonar:sonar -Dsonar.projectName=$JOB_NAME \
                     -Dsonar.projectKey=$JOB_NAME \
-                    -Dsonar.host.url=http://43.205.229.142:9000 \
+                    -Dsonar.host.url=http://172.31.84.238:9000 \
                     -Dsonar.token=$sonar_token'
             }
-        }   
-
+        } 
+        
         stage('COPY JAR & DOCKERFILE') {
             steps {
                 sh 'ansible-playbook playbooks/create_directory.yml'
             }
-        }     
-
+        }
+        
         stage('PUSH IMAGE ON DOCKERHUB') {
             environment {
             dockerhub_user = credentials('DOCKERHUB_USER')            
@@ -65,7 +65,4 @@ pipeline {
                     --extra-vars "dockerhub_pass=$dockerhub_pass"'              
             }
         }
-                
-
-    }
-}            
+        
