@@ -26,6 +26,24 @@ pipeline {
                    sed -i "s/IMAGE_NAME/$JOB_NAME:v1.$BUILD_ID/g" webapp/src/main/webapp/index.jsp
                    '''
             }            
-        }        
+        } 
+
+        stage('BUILD') {
+            steps {
+                sh 'mvn clean install package'
+            }
+        } 
+        
+        stage('SONAR SCANNER') {
+            environment {
+            sonar_token = credentials('SONAR_TOKEN')
+            }
+            steps {
+                sh 'mvn sonar:sonar -Dsonar.projectName=$JOB_NAME \
+                    -Dsonar.projectKey=$JOB_NAME \
+                    -Dsonar.host.url=http://3.109.208.97:9000 \
+                    -Dsonar.token=$sonar_token'
+            }
+        }         
     }
 }       
